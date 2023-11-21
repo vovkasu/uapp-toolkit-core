@@ -1,0 +1,8 @@
+{
+	"name": "com.uapp-toolkit.core",
+	"displayName": "UAppToolKit.Core",
+	"description": "UAppToolKit Core",
+	"version": "1.0.0",
+	"unity": "2022.3",
+	"license": "MIT"
+  }
