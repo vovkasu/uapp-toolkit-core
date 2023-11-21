@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Collections;
-using System.Collections.Generic;
 using UAppToolKit.Core.Application;
 using UAppToolKit.Core.Pages;
 using UnityEditor;

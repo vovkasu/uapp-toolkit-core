@@ -1,11 +1,9 @@
 ﻿using System;
 using UAppToolKit.Core.Application;
-using Unity.VisualScripting;
 using UnityEngine.UI;
 
 namespace UAppToolKit.Core.Popup
 {
-    [RenamedFrom("RescuePop.Scripts.Core.Popup.PopUpBase")]
     public class PopUpBase : PopUpAnimationController
     {
         public Button CloseButton;

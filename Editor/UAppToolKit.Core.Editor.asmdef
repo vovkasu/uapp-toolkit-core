@@ -1,0 +1,18 @@
+{
+    "name": "UAppToolKit.Core.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:98413a58206a9e44cb044a8f351a5517"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
