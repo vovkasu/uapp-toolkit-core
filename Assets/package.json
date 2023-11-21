@@ -1,8 +1,18 @@
 {
-	"name": "com.uapp-toolkit.core",
-	"displayName": "UAppToolKit.Core",
-	"description": "UAppToolKit Core",
-	"version": "1.0.0",
-	"unity": "2022.3",
-	"license": "MIT"
+  "name": "com.uapp-toolkit.core",
+  "version": "1.0.0",
+  "displayName": "UAppToolKit.Core",
+  "description": "UAppToolKit Core",
+  "unity": "2019.1",
+  "license": "MIT",
+  "dependencies": {
+ },
+ "keywords": [
+    "core",
+    "scripting"
+  ],
+  "author": {
+    "name": "Surov Volodymyr",
+    "email": "vovkasu@gmail.com"
   }
+}  
