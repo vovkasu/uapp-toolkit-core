@@ -19,7 +19,7 @@ namespace UAppToolKit.Core.Popup
 
         protected virtual void Awake()
         {
-            if (CloseButton != null) CloseButton.onClick.AddListener(EntryPointBase.NavigationController.GoBack);
+            if (CloseButton != null) CloseButton.onClick.AddListener(EntryPointBase.Current.NavigationControllerBase.GoBack);
             Show();
         }
 

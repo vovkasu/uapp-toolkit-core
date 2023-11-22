@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UAppToolKit.Core.Application;
+using UAppToolKit.Core.Loading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -16,16 +17,17 @@ namespace UAppToolKit.Core.Pages
         protected bool IsNavigationRan;
         protected DateTime _startPageNavigationTime;
         public TimeSpan MinTimePageLoading = TimeSpan.FromSeconds(1);
+
+        public event Action OnStartPageLoaded;
+
         private bool isSplashScreenReady;
         private bool isStartPageReady;
         private Action _onLoadedAction;
 
-
-        public NavigationController(IPageBaseLink startPage) : base(startPage)
+        public override IEnumerator<float> Initialize()
         {
             _applicationScene = EntryPointBase.Current.gameObject.scene;
-            var startPageLink = (PageBaseLink) startPage;
-            var startPageSceneName = GetSceneName(startPageLink);
+            var startPageSceneName = GetSceneName(StartPageLink);
 
             var scenesForUnload = new List<Scene>();
             Scene? startPageScene = null;
@@ -45,19 +47,18 @@ namespace UAppToolKit.Core.Pages
                 scenesForUnload.Add(scene);
             }
 
+            float progressSize = scenesForUnload.Count + 1f;
+            float progress = 0f;
+
             foreach (var scene in scenesForUnload)
             {
-                SceneManager.UnloadScene(scene.name);
-            }
+                var unloadSceneAsync = SceneManager.UnloadSceneAsync(scene.name);
+                while (!unloadSceneAsync.isDone)
+                {
+                    yield return (progress + unloadSceneAsync.progress) / progressSize;
+                }
 
-            Action onPageLoad;
-            if (EntryPointBase.Current.ShowSplashScreen)
-            {
-                onPageLoad = null;
-            }
-            else
-            {
-                onPageLoad = EntryPointBase.Current.OnAppStarted;
+                progress += 1f;
             }
 
             if (startPageScene.HasValue)
@@ -65,18 +66,26 @@ namespace UAppToolKit.Core.Pages
                 SceneManager.SetActiveScene(startPageScene.Value);
                 CurrentPage = FindPageBase(startPageScene.Value);
                 InitStartPage(ActivePage());
-                OnStartPageActive(onPageLoad);
+                OnStartPageActive(OnStartPageLoaded);
             }
             else
             {
-                LoadScene(startPageLink, _ =>
+                var loadSceneAsync = LoadSceneAsync(StartPageLink, _ =>
                 {
                     OnPageLoaded(_, null, InitStartPage, true);
-                    OnStartPageActive(onPageLoad);
+                    OnStartPageActive(OnStartPageLoaded);
                 });
+
+                while (loadSceneAsync.MoveNext())
+                {
+                    yield return (progress + loadSceneAsync.Current) / progressSize;
+                }
             }
-            Pages.Add(startPageLink);
+            Pages.Add(StartPageLink);
             IsNavigationRan = false;
+
+            InstantiateLoadingScreen(LoadingScreenPrefab);
+            yield return 1f;
         }
 
         private void OnStartPageActive(Action onPageLoad)
@@ -102,7 +111,7 @@ namespace UAppToolKit.Core.Pages
             {
                 initPage(CurrentPage);
             }
-            EntryPointBase.Current.StartCoroutine(DelayStartPage(page, DateTime.Now - _startPageNavigationTime, isStartPage));
+            StartCoroutine(DelayStartPage(page, DateTime.Now - _startPageNavigationTime, isStartPage));
         }
 
         private IEnumerator DelayStartPage(PageBase page, TimeSpan pageLoadTime, bool isStartPage)
@@ -136,7 +145,7 @@ namespace UAppToolKit.Core.Pages
             return CurrentPageIndex > 0;
         }
 
-        public override void NavitageTo(IPageBaseLink nextPage, object newPageArgs)
+        public override void NavigateTo(IPageBaseLink nextPage, object newPageArgs)
         {
             if (IsNavigationRan) return;
             CurrentPageIndex++;
@@ -254,24 +263,39 @@ namespace UAppToolKit.Core.Pages
         protected virtual void ShowLoadingScreen(Action onComplete)
         {
             //EntryPointBase.Current.LoadingScreen.gameObject.SetActive(true);
-            EntryPointBase.Current.LoadingScreen.FadeIn(onComplete);
+            LoadingScreen.FadeIn(onComplete);
         }
 
         private void HideLoadingScreen(Action onComplete)
         {
-            if (EntryPointBase.Current.LoadingScreen != null)
+            if (LoadingScreen != null)
             {
                 //EntryPointBase.Current.LoadingScreen.gameObject.SetActive(false);
-                EntryPointBase.Current.LoadingScreen.FadeOut(onComplete);
+                LoadingScreen.FadeOut(onComplete);
             }
+        }
+
+        public virtual LoadingScreen InstantiateLoadingScreen(LoadingScreen prefab)
+        {
+            if (prefab != null)
+            {
+                if (LoadingScreen != null)
+                {
+                    DestroyImmediate(LoadingScreen.gameObject, true);
+                }
+                LoadingScreen = Instantiate(prefab, Vector3.zero, Quaternion.identity, transform);
+                LoadingScreen.name = "Loading Screen";
+                LoadingScreen.Init();
+            }
+            return LoadingScreen;
         }
 
         protected virtual void LoadScene(PageBaseLink nextPage, Action<PageBase> onFinishAction)
         {
-            EntryPointBase.Current.StartCoroutine(LoadSceneAsync(nextPage, onFinishAction));
+            StartCoroutine(LoadSceneAsync(nextPage, onFinishAction));
         }
 
-        private IEnumerator LoadSceneAsync(PageBaseLink nextPage, Action<PageBase> onFinishAction)
+        private IEnumerator<float> LoadSceneAsync(PageBaseLink nextPage, Action<PageBase> onFinishAction)
         {
             var sceneName = GetSceneName(nextPage);
             var result = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
@@ -279,13 +303,13 @@ namespace UAppToolKit.Core.Pages
 
             while (!result.isDone)
             {
-                yield return new WaitForEndOfFrame();
+                yield return result.progress;
             }
             var sceneByName = SceneManager.GetSceneByName(sceneName);
             SceneManager.SetActiveScene(sceneByName);
             var pageBase = FindPageBase(sceneByName);
             onFinishAction(pageBase);
-            yield return null;
+            yield return 1f;
         }
 
         public void StartPageLocker(bool isTimer, Action onLoadedAction)
@@ -306,12 +330,6 @@ namespace UAppToolKit.Core.Pages
             {
                 _onLoadedAction();
             }
-        }
-
-        protected virtual string GetSceneName(PageBaseLink pageBaseLink)
-        {
-            var baseLink = EntryPointBase.Current.PageLinkList.First(_ => _.SceneGuid == pageBaseLink.SceneGuid);
-            return baseLink.SceneName;
         }
     }
 }

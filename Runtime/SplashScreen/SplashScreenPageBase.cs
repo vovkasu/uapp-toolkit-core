@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using UAppToolKit.Core.Animations;
-using UAppToolKit.Core.Application;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,23 +8,26 @@ namespace UAppToolKit.Core.SplashScreen
 {
     public class SplashScreenPageBase : MonoBehaviour
     {
-        public Image Background;
+        public List<Graphic> AnimatedGraphics = new List<Graphic>();
         public float HideBackgroundSec = 0.3f;
+        public Slider Progress;
 
-        public delegate void AnimationTickEventHandler(object value);
-
-        public AnimationTickEventHandler AnimationTick;
-        private Storyboard _hideBackgroundStoryboard;
+        private IEnumerator<float> _progressTask;
 
         public event Action StartHideEvent;
+        public event Action FinishHideEvent;
+
+
+        private void Awake()
+        {
+            Progress.gameObject.SetActive(false);
+        }
 
         protected virtual void OnStartHideEvent()
         {
             Action handler = StartHideEvent;
             if (handler != null) handler();
         }
-
-        public event Action FinishHideEvent;
 
         protected virtual void OnFinishHideEvent()
         {
@@ -34,47 +37,63 @@ namespace UAppToolKit.Core.SplashScreen
 
         public virtual void StartHide()
         {
-            _hideBackgroundStoryboard = gameObject.AddComponent<Storyboard>();
+            var hideBackgroundStoryboard = gameObject.AddComponent<Storyboard>();
 
             OnStartHideEvent();
-            var backgroundColor = Background.color;
-            var targetColor = backgroundColor;
-            targetColor.a = 0;
-            var colorAnimation = new Vector4Animation
+
+            foreach (var animatedGraphic in AnimatedGraphics)
             {
-                From = backgroundColor,
-                To = targetColor,
-                Duration = TimeSpan.FromSeconds(HideBackgroundSec)
-            };
-            colorAnimation.Tick += color =>
-            {
-                Background.color = (Vector4)color;
-            };
-            _hideBackgroundStoryboard.Children.Add(colorAnimation);
-            _hideBackgroundStoryboard.Completed += (o, eventArgs) =>
+                var graphic = animatedGraphic;
+                var fromColor = graphic.color;
+                var targetColor = fromColor;
+                targetColor.a = 0;
+                var colorAnimation = new Vector4Animation
+                {
+                    From = fromColor,
+                    To = targetColor,
+                    Duration = TimeSpan.FromSeconds(HideBackgroundSec)
+                };
+                colorAnimation.Tick += color =>
+                {
+                    graphic.color = (Vector4)color;
+                };                
+
+                hideBackgroundStoryboard.Children.Add(colorAnimation);
+            }
+
+            hideBackgroundStoryboard.Completed += (o, a) =>
             {
                 OnFinishHideEvent();
-                FinalizeSpalsh();
+                FinalizeSplash();
             };
+
+            hideBackgroundStoryboard.Begin();
+            HideProgressBar();
         }
 
-        private void Update()
-        {
-            if (EntryPointBase.NavigationController != null && _hideBackgroundStoryboard != null &&
-                !_hideBackgroundStoryboard.IsEnabled)
-            {
-                _hideBackgroundStoryboard.Begin();
-            }
-        }
-
-        public virtual void StartHide(TimeSpan timeToShow)
-        {
-            StartHide();
-        }
-
-        protected virtual void FinalizeSpalsh()
+        protected virtual void FinalizeSplash()
         {
             Destroy(gameObject);
+        }
+
+        public void ShowProgressBar(IEnumerator<float> task)
+        {
+            Progress.gameObject.SetActive(true);
+            _progressTask = task;
+        }
+
+        public void HideProgressBar()
+        {
+            Progress.gameObject.SetActive(false);
+            _progressTask = null;
+        }
+
+        private void FixedUpdate()
+        {
+            if (_progressTask != null)
+            {
+                Progress.value = _progressTask.Current;
+            }
         }
     }
 }

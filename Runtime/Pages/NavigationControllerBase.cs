@@ -1,28 +1,43 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using UAppToolKit.Core.Loading;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.SceneManagement;
+#endif
 
 namespace UAppToolKit.Core.Pages
 {
-    public abstract class NavigationControllerBase
+    public abstract class NavigationControllerBase : MonoBehaviour
     {
-        protected NavigationControllerBase(IPageBaseLink startPageLink)
-        {
-            _startPageLink = startPageLink;
-        }
+        [Header("Page links")]
+        public PageBaseLink StartPageLink;
+        public List<PageBaseLink> PageLinkList = new List<PageBaseLink>();
 
-        public static readonly List<IPageBaseLink> Pages = new List<IPageBaseLink>();
+        [Header("Page loading screen")]
+        public LoadingScreen LoadingScreenPrefab;
+        // [HideInInspector] 
+        public LoadingScreen LoadingScreen;
+
         public static int CurrentPageIndex;
-        protected IPageBaseLink _startPageLink;
+        public static readonly List<IPageBaseLink> Pages = new List<IPageBaseLink>();
+        [HideInInspector] public bool BackNavigationByEscape = true;
 
+        [HideInInspector]
+        public PageBase AddPageBase;
+
+        public abstract IEnumerator<float> Initialize();
         public abstract Navigator ActivePage();
         public abstract bool CanGoBack();
 
-        public virtual void NavitageTo(IPageBaseLink nextPage)
+        public virtual void NavigateTo(IPageBaseLink nextPage)
         {
-            NavitageTo(nextPage, null);
+            NavigateTo(nextPage, null);
         }
 
-        public abstract void NavitageTo(IPageBaseLink nextPage, object newPageArgs);
+        public abstract void NavigateTo(IPageBaseLink nextPage, object newPageArgs);
 
         public virtual void RestartLastPage()
         {
@@ -54,5 +69,59 @@ namespace UAppToolKit.Core.Pages
 
         public abstract void GoToStartPage();
         public abstract void GoBack(object prevPageArgs);
+
+        protected virtual string GetSceneName(PageBaseLink pageBaseLink)
+        {
+            var baseLink = PageLinkList.First(_ => _.SceneGuid == pageBaseLink.SceneGuid);
+            return baseLink.SceneName;
+        }
+
+
+#if UNITY_EDITOR
+        protected void OnValidate()
+        {
+            RegisterPageBase(AddPageBase);
+        }
+
+        public void RegisterPageBase(PageBase addPageBase)
+        {
+            if (addPageBase != null)
+            {
+                var scene = addPageBase.gameObject.scene;
+                var assetPathToGuid = AssetDatabase.AssetPathToGUID(scene.path);
+
+                addPageBase.PageBaseLink = new PageBaseLink
+                {
+                    SceneGuid = assetPathToGuid,
+                    SceneTitle = addPageBase.name,
+                    SceneName = scene.name
+                };
+
+                EditorSceneManager.MarkSceneDirty(addPageBase.gameObject.scene);
+                EditorSceneManager.SaveOpenScenes();
+
+                var oldPageBaseLink = PageLinkList.FirstOrDefault(_ => _.SceneGuid == assetPathToGuid);
+
+                if (oldPageBaseLink == null)
+                {
+                    var pageBaseLink = new PageBaseLink();
+                    pageBaseLink.SceneGuid = assetPathToGuid;
+                    pageBaseLink.SceneTitle = addPageBase.name;
+                    pageBaseLink.SceneName = scene.name;
+                    AddPageBase = null;
+                    PageLinkList.Add(pageBaseLink);
+                }
+                else
+                {
+                    oldPageBaseLink.SceneTitle = addPageBase.PageBaseLink.SceneTitle;
+                    oldPageBaseLink.SceneName = addPageBase.PageBaseLink.SceneName;
+                    AddPageBase = null;
+                }
+                EditorUtility.SetDirty(addPageBase);
+                EditorUtility.SetDirty(this);
+            }
+        }
+#endif
+
     }
 }

@@ -6,13 +6,20 @@
   "unity": "2019.1",
   "license": "MIT",
   "dependencies": {
- },
- "keywords": [
+  },
+  "keywords": [
     "core",
     "scripting"
   ],
   "author": {
     "name": "Surov Volodymyr",
     "email": "vovkasu@gmail.com"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Start Application",
+      "description": "Show splash screen with progress bar and start first page.",
+      "path": "Samples~/StartApplicationSample"
+    }
+  ]  
 }  

@@ -5,8 +5,10 @@ using Object = UnityEngine.Object;
 
 namespace RescueMatch.Core.Audio
 {
-    public abstract class MediaPlayerBase
+    public abstract class MediaPlayerBase : MonoBehaviour
     {
+        public string SoundRootPath = "Sounds/";
+
         protected readonly Dictionary<string, AudioSource> NameSoundMap = new Dictionary<string, AudioSource>();
 
         protected TimeSpan OffsetTime = TimeSpan.FromMilliseconds(500);
@@ -31,16 +33,16 @@ namespace RescueMatch.Core.Audio
         }
         
         protected readonly List<List<string>> _soundLines = new List<List<string>>();
-        protected readonly string _soundsPath;
 
 
-        protected MediaPlayerBase(GameObject root, string soundsPath, float defaultVolume)
+        protected MediaPlayerBase(float defaultVolume)
         {
-            _root = root;
-            _soundsPath = soundsPath;
+            _root = gameObject;
             DefaultVolume = defaultVolume;
         }
 
+
+        public abstract void Initialize(float backgroundMusicVolume, float sfxSoundVolume);
 
         public virtual AudioSource LoadSound(string soundFileName)
         {
@@ -68,7 +70,7 @@ namespace RescueMatch.Core.Audio
 
         public string GetSoundPath(string soundFileName)
         {
-            return _soundsPath + soundFileName;
+            return SoundRootPath + soundFileName;
         }
 
         public virtual AudioSource LoadSound(AudioClip audioClip)

@@ -1,49 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using RescueMatch.Core.Audio;
-using UAppToolKit.Core.Loading;
 using UAppToolKit.Core.Options;
 using UAppToolKit.Core.Pages;
 using UAppToolKit.Core.SplashScreen;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using UnityEditor;
-using UnityEditor.SceneManagement;
-#endif
-
 namespace UAppToolKit.Core.Application
 {
     public abstract class EntryPointBase : MonoBehaviour
     {
-        public PageBaseLink StartPage;
-        public static NavigationControllerBase NavigationController;
-        public static OptionsProviderBase Options;
         public static EntryPointBase Current;
 
-        public string SoundRootPath = "Sounds/";
-        public MediaPlayerBase MediaPlayerBase;
-        
-        [HideInInspector] public bool BackNavigationByEscape = true;
-
-        [HideInInspector] public LoadingScreen LoadingScreen;
-        public LoadingScreen LoadingScreenPrefab;
-
+        [Header("Splash screen")]
         public bool ShowSplashScreen;
         public SplashScreenPageBase SplashScreenPrefab;
-
-        public List<PageBaseLink> PageLinkList = new List<PageBaseLink>();
-
-        [HideInInspector]
-        public PageBase AddPageBase;
-
         protected SplashScreenPageBase SplashScreen;
-        protected Navigator[] _allPages;
 
-        public abstract NavigationControllerBase InitNavigationController();
+
+        [Header("Services")]
+        public NavigationControllerBase NavigationControllerBase;
+        public OptionsProviderBase Options;
+
+        public MediaPlayerBase MediaPlayerBase;
+
         public abstract OptionsProviderBase GetOptionsProviderBase();
-        protected abstract MediaPlayerBase GetMediaPlayerBase(GameObject root, string soundRootPath, float backgroundMusicVolume, float sfxSoundVolume);
 
         public abstract void SetStartPage(GameObject startPage);
         public Action AppStarted;
@@ -56,7 +37,8 @@ namespace UAppToolKit.Core.Application
 
         public virtual void OnAppStarted()
         {
-            NavigationController.RunStartPage();
+            NavigationControllerBase.RunStartPage();
+            SplashScreen.StartHide();
             if (AppStarted != null)
             {
                 AppStarted();
@@ -65,19 +47,11 @@ namespace UAppToolKit.Core.Application
 
         protected virtual void Awake()
         {
-#if UNITY_IOS
-            UnityEngine.Application.targetFrameRate = 60;
-#endif
+            Current = this;
             Options = GetOptionsProviderBase();
             Options.LaunchCount++;
 
-            MediaPlayerBase = GetMediaPlayerBase(gameObject, SoundRootPath, BackgroundMusicVolume, SfxSoundVolume);
-
-            _allPages = gameObject.GetComponentsInChildren<Navigator>(true);
-            foreach (var children in _allPages)
-            {
-                children.gameObject.SetActive(false);
-            }
+            MediaPlayerBase.Initialize(BackgroundMusicVolume, SfxSoundVolume);
 
             if (ShowSplashScreen)
             {
@@ -89,22 +63,27 @@ namespace UAppToolKit.Core.Application
 
         protected virtual void Start()
         {
-            InitNavigationController();
+            var initializeApplicationTask = InitializeApplication();
+            if (ShowSplashScreen)
+            {
+                SplashScreen.ShowProgressBar(initializeApplicationTask);
+            }
+            StartCoroutine(initializeApplicationTask);
         }
 
-        public virtual LoadingScreen InstantiateLoadingScreen(LoadingScreen prefab)
+        private IEnumerator<float> InitializeApplication()
         {
-            if (prefab != null)
+            float fullProgress = 1f;
+            float progress = 0f;
+
+            var navigationControllerInitializingTask = NavigationControllerBase.Initialize();
+            while (navigationControllerInitializingTask.MoveNext())
             {
-                if (LoadingScreen != null)
-                {
-                    DestroyImmediate(LoadingScreen.gameObject, true);
-                }
-                LoadingScreen = Instantiate(prefab, Vector3.zero, Quaternion.identity, transform);
-                LoadingScreen.name = "Loading Screen";
-                LoadingScreen.Init();
+                yield return (progress + navigationControllerInitializingTask.Current) / fullProgress;
             }
-            return LoadingScreen;
+
+            yield return 1f;
+            OnAppStarted();
         }
 
         protected virtual void Update()
@@ -134,58 +113,10 @@ namespace UAppToolKit.Core.Application
 
         protected virtual void OnFinishHideSplashScreen()
         {
-            OnAppStarted();
         }
 
         protected virtual void OnSplashScreenStarted()
         {
-            SplashScreen.StartHide();
         }
-
-#if UNITY_EDITOR
-        protected void OnValidate()
-        {
-            RegistratePageBase(AddPageBase);
-        }
-
-        public void RegistratePageBase(PageBase addPageBase)
-        {
-            if (addPageBase != null)
-            {
-                var scene = addPageBase.gameObject.scene;
-                var assetPathToGuid = AssetDatabase.AssetPathToGUID(scene.path);
-
-                addPageBase.PageBaseLink = new PageBaseLink
-                {
-                    SceneGuid = assetPathToGuid,
-                    SceneTitle = addPageBase.name,
-                    SceneName = scene.name
-                };
-
-                EditorSceneManager.MarkSceneDirty(addPageBase.gameObject.scene);
-                EditorSceneManager.SaveOpenScenes();
-
-                var oldPageBaseLink = PageLinkList.FirstOrDefault(_ => _.SceneGuid == assetPathToGuid);
-
-                if (oldPageBaseLink == null)
-                {
-                    var pageBaseLink = new PageBaseLink();
-                    pageBaseLink.SceneGuid = assetPathToGuid;
-                    pageBaseLink.SceneTitle = addPageBase.name;
-                    pageBaseLink.SceneName = scene.name;
-                    AddPageBase = null;
-                    PageLinkList.Add(pageBaseLink);
-                }
-                else
-                {
-                    oldPageBaseLink.SceneTitle = addPageBase.PageBaseLink.SceneTitle;
-                    oldPageBaseLink.SceneName = addPageBase.PageBaseLink.SceneName;
-                    AddPageBase = null;
-                }
-                EditorUtility.SetDirty(addPageBase);
-                EditorUtility.SetDirty(this);
-            }
-        }
-#endif
     }
 }

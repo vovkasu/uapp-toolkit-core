@@ -24,11 +24,12 @@ namespace UAppToolKit.Core.Pages
         }
 
 #if UNITY_EDITOR
-        [MenuItem("CONTEXT/PageBase/Registration Page for navigation")]
-        public static void RegistratePage(MenuCommand command)
+        [MenuItem("CONTEXT/PageBase/Register Page for navigation")]
+        public static void RegisterPage(MenuCommand command)
         {
             var pageBase = (PageBase)command.context;
-            FindObjectOfType<EntryPointBase>().RegistratePageBase(pageBase);
+            var entryPointBase = FindObjectOfType<EntryPointBase>();
+            entryPointBase.NavigationControllerBase.RegisterPageBase(pageBase);
         }
 #endif
     }

@@ -48,7 +48,7 @@ namespace UAppToolKit.Core.Pages
         {
             if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
-                if (EntryPointBase.Current.BackNavigationByEscape)
+                if (EntryPointBase.Current.NavigationControllerBase.BackNavigationByEscape)
                 {
                     GoBackLoadingType();
                 }
@@ -57,7 +57,7 @@ namespace UAppToolKit.Core.Pages
 
         protected virtual void GoBackLoadingType()
         {
-            EntryPointBase.NavigationController.GoBack();
+            EntryPointBase.Current.NavigationControllerBase.GoBack();
         }
 
         protected virtual void OnDestroy()
