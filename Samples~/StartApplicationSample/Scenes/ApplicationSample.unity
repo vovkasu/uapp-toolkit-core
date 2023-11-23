@@ -201,8 +201,8 @@ MonoBehaviour:
   SplashScreenPrefab: {fileID: 114462589634068584, guid: 18fa322381ab09d43ab967f22c42facc, type: 3}
   NavigationControllerBase: {fileID: 1320906393}
   MediaPlayerBase: {fileID: 352752953}
-  BackgroundMusicVolume: 0
-  SfxSoundVolume: 0
+  MediaPlayer: {fileID: 0}
+  NavigationController: {fileID: 0}
 --- !u!4 &885040296
 Transform:
   m_ObjectHideFlags: 0
@@ -264,18 +264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7add1e8f629c6d143a3ae9425aaa487d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartPageLink:
-    SceneTitle: MenuPageSample
-    SceneName: MenuPageSample
-    SceneGuid: 7c2a670a6be923547bd803c958b8c7e3
-  PageLinkList:
-  - SceneTitle: MenuPageSample
-    SceneName: MenuPageSample
-    SceneGuid: 7c2a670a6be923547bd803c958b8c7e3
-  - SceneTitle: GamePlayPage Sample
-    SceneName: GamePlaySample
-    SceneGuid: b0f520a2bdd3e2343b3d1986ed22e512
+  StartPageLink: {fileID: 11400000, guid: 9ccce5b38824ea147bd385889bec5b98, type: 2}
   LoadingScreenPrefab: {fileID: 114170882767720562, guid: 72d6e444e36c2df459d9d9ee9fdf7802, type: 3}
   LoadingScreen: {fileID: 0}
-  BackNavigationByEscape: 0
-  AddPageBase: {fileID: 0}
+  BackNavigationByEscape: 1

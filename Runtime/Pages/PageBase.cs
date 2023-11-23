@@ -1,6 +1,4 @@
-﻿using UAppToolKit.Core.Application;
-using UAppToolKit.Core.Popup;
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using UnityEditor;
 #endif
 using UnityEngine;
@@ -12,24 +10,37 @@ namespace UAppToolKit.Core.Pages
         [HideInInspector]
         public PageBaseLink PageBaseLink;
 
-        public T CreateCustomPopUp<T>(T popUpPrefab, Transform parent) where T : PopUpBase
-        {
-            var popup = Instantiate(popUpPrefab, parent);
-            var rectTransform = popup.GetComponent<RectTransform>();
-            rectTransform.offsetMin = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;
-            rectTransform.localScale = Vector3.one;
-            PopUps.Add(popup);
-            return popup;
-        }
-
 #if UNITY_EDITOR
-        [MenuItem("CONTEXT/PageBase/Register Page for navigation")]
-        public static void RegisterPage(MenuCommand command)
+        [MenuItem("CONTEXT/PageBase/Create page link")]
+        public static void CreatePageLink(MenuCommand command)
         {
             var pageBase = (PageBase)command.context;
-            var entryPointBase = FindObjectOfType<EntryPointBase>();
-            entryPointBase.NavigationControllerBase.RegisterPageBase(pageBase);
+            if (pageBase.PageBaseLink != null)
+            {
+                EditorGUIUtility.PingObject(pageBase.PageBaseLink);
+                return;
+            }
+
+            var scene = pageBase.gameObject.scene;
+            var scenePath = scene.path;
+            var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath);
+
+            var sceneName = sceneAsset.name;
+            string pageBaseName = pageBase.name;
+
+            var directoryName = System.IO.Path.GetDirectoryName(scenePath);
+            var pageLinkPath = System.IO.Path.Combine(directoryName, $"{pageBaseName}_pageLink.asset");
+
+            var pageBaseLink = ScriptableObject.CreateInstance<PageBaseLink>();
+
+            pageBaseLink.SceneAsset = sceneAsset;
+            pageBaseLink.SceneName  = sceneName;
+            pageBaseLink.ScenePath = scenePath;
+            pageBaseLink.PageName = pageBaseName;
+            pageBase.PageBaseLink = pageBaseLink;
+
+            AssetDatabase.CreateAsset(pageBaseLink, pageLinkPath);
+            EditorUtility.SetDirty(pageBase);
         }
 #endif
     }

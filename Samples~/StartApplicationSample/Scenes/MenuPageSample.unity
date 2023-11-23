@@ -274,14 +274,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsActive: 0
   WaitTimeLoadScreen: 1
-  PageBaseLink:
-    SceneTitle: MenuPageSample
-    SceneName: MenuPageSample
-    SceneGuid: 7c2a670a6be923547bd803c958b8c7e3
-  GamePlayPageLink:
-    SceneTitle: GamePlayPage Sample
-    SceneName: GamePlaySample
-    SceneGuid: b0f520a2bdd3e2343b3d1986ed22e512
+  PageBaseLink: {fileID: 11400000, guid: 9ccce5b38824ea147bd385889bec5b98, type: 2}
+  GamePlayPageLink: {fileID: 11400000, guid: 73c8171480ee2394e9d560d1c8c4df45, type: 2}
 --- !u!1 &498712851
 GameObject:
   m_ObjectHideFlags: 0
@@ -675,10 +669,11 @@ MonoBehaviour:
       - m_Target: {fileID: 258805980}
         m_TargetAssemblyTypeName: UAppToolKit.Core.Sample.MenuPageSample, Assembly-CSharp
         m_MethodName: StartGamePlay
-        m_Mode: 1
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 11400000, guid: 73c8171480ee2394e9d560d1c8c4df45, type: 2}
+          m_ObjectArgumentAssemblyTypeName: UAppToolKit.Core.Pages.PageBaseLink,
+            UAppToolKit.Core
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

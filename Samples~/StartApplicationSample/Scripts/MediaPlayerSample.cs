@@ -1,15 +1,13 @@
+using System.Collections.Generic;
 using RescueMatch.Core.Audio;
 
 namespace UAppToolKit.Core.Sample
 {
     public class MediaPlayerSample : MediaPlayerBase
     {
-        public MediaPlayerSample(float defaultVolume) : base(defaultVolume)
+        public override IEnumerator<float> Initialize()
         {
-        }
-
-        public override void Initialize(float backgroundMusicVolume, float sfxSoundVolume)
-        {
+            yield return 1f;
         }
     }
 }

@@ -12,8 +12,8 @@ namespace RescueMatch.Core.Audio
         protected readonly Dictionary<string, AudioSource> NameSoundMap = new Dictionary<string, AudioSource>();
 
         protected TimeSpan OffsetTime = TimeSpan.FromMilliseconds(500);
-        protected readonly GameObject _root;
-        protected float DefaultVolume;
+
+        protected readonly List<List<string>> _soundLines = new List<List<string>>();
 
         private bool _isMuted;
         public virtual bool IsMuted 
@@ -31,18 +31,8 @@ namespace RescueMatch.Core.Audio
                 _isMuted = value;
             }
         }
-        
-        protected readonly List<List<string>> _soundLines = new List<List<string>>();
 
-
-        protected MediaPlayerBase(float defaultVolume)
-        {
-            _root = gameObject;
-            DefaultVolume = defaultVolume;
-        }
-
-
-        public abstract void Initialize(float backgroundMusicVolume, float sfxSoundVolume);
+        public abstract IEnumerator<float> Initialize();
 
         public virtual AudioSource LoadSound(string soundFileName)
         {
@@ -63,7 +53,7 @@ namespace RescueMatch.Core.Audio
             var path = GetSoundPath(soundFileName);
             var clip = LoadAudioClip(path);
             var audioSource = CacheAudioClip(clip, alias);
-            TuneAudioSource(audioSource, DefaultVolume);
+            TuneAudioSource(audioSource);
 
             return audioSource;
         }
@@ -92,7 +82,7 @@ namespace RescueMatch.Core.Audio
 
         protected virtual AudioSource CacheAudioClip(AudioClip audioClip, string soundFileName = "")
         {
-            var audioSource = _root.AddComponent<AudioSource>();
+            var audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.clip = audioClip;
             var soundName = string.IsNullOrEmpty(soundFileName) ? audioClip.name : soundFileName;
 
@@ -305,12 +295,6 @@ namespace RescueMatch.Core.Audio
             }
             _soundLines.Clear();
         }
-        
-        [Obsolete("Obsolete: use Clear")]
-        public void Finalize()
-        {
-            Clear();
-        }
 
         public void Clear()
         {
@@ -321,6 +305,11 @@ namespace RescueMatch.Core.Audio
             _soundLines.Clear();
             NameSoundMap.Clear();
             Resources.UnloadUnusedAssets();
+        }
+
+        private void OnDestroy()
+        {
+            Clear();
         }
     }
 }

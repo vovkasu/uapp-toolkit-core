@@ -6,7 +6,6 @@ namespace UAppToolKit.Core.Sample
 {
     public class MenuPageSample : PageBase
     {
-        public PageBaseLink GamePlayPageLink;
         public override void OnNavigatedTo(object arg)
         {
             Debug.Log("MenuPageSample.OnNavigatedTo");
@@ -31,9 +30,9 @@ namespace UAppToolKit.Core.Sample
             base.OnNavigatedFromCompleted();
         }
 
-        public void StartGamePlay()
+        public void StartGamePlay(PageBaseLink gamePlayPageLink)
         {
-            EntryPointBase.Current.NavigationControllerBase.NavigateTo(GamePlayPageLink);
+            EntryPointBase.Current.NavigationControllerBase.NavigateTo(gamePlayPageLink);
         }
     }
 }

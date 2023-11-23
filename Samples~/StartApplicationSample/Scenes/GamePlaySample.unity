@@ -634,7 +634,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1325794412}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -658,10 +658,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsActive: 0
   WaitTimeLoadScreen: 1
-  PageBaseLink:
-    SceneTitle: GamePlayPage Sample
-    SceneName: GamePlaySample
-    SceneGuid: b0f520a2bdd3e2343b3d1986ed22e512
+  PageBaseLink: {fileID: 11400000, guid: 73c8171480ee2394e9d560d1c8c4df45, type: 2}
 --- !u!1 &1766810183
 GameObject:
   m_ObjectHideFlags: 0

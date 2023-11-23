@@ -17,41 +17,28 @@ namespace UAppToolKit.Core.Application
         public SplashScreenPageBase SplashScreenPrefab;
         protected SplashScreenPageBase SplashScreen;
 
-
         [Header("Services")]
         public NavigationControllerBase NavigationControllerBase;
-        public OptionsProviderBase Options;
-
         public MediaPlayerBase MediaPlayerBase;
-
         public abstract OptionsProviderBase GetOptionsProviderBase();
 
-        public abstract void SetStartPage(GameObject startPage);
-        public Action AppStarted;
+        public event Action OnAppStarted;
 
-        [Header("Sounds")] 
-        [Range(0f, 1f)]
-        public float BackgroundMusicVolume;
-        [Range(0f, 1f)]
-        public float SfxSoundVolume;
-
-        public virtual void OnAppStarted()
+        public virtual void AppStarted()
         {
             NavigationControllerBase.RunStartPage();
             SplashScreen.StartHide();
-            if (AppStarted != null)
+            if (OnAppStarted != null)
             {
-                AppStarted();
+                OnAppStarted();
             }
         }
 
         protected virtual void Awake()
         {
             Current = this;
-            Options = GetOptionsProviderBase();
-            Options.LaunchCount++;
-
-            MediaPlayerBase.Initialize(BackgroundMusicVolume, SfxSoundVolume);
+            var optionsProviderBase = GetOptionsProviderBase();
+            optionsProviderBase.LaunchCount++;
 
             if (ShowSplashScreen)
             {
@@ -73,7 +60,7 @@ namespace UAppToolKit.Core.Application
 
         private IEnumerator<float> InitializeApplication()
         {
-            float fullProgress = 1f;
+            float fullProgress = 2f;
             float progress = 0f;
 
             var navigationControllerInitializingTask = NavigationControllerBase.Initialize();
@@ -81,9 +68,16 @@ namespace UAppToolKit.Core.Application
             {
                 yield return (progress + navigationControllerInitializingTask.Current) / fullProgress;
             }
+            progress = 1f;
+
+            var mediaPlayerInitializingTask = MediaPlayerBase.Initialize();
+            while (mediaPlayerInitializingTask.MoveNext())
+            {
+                yield return (progress + mediaPlayerInitializingTask.Current) / fullProgress;
+            }
 
             yield return 1f;
-            OnAppStarted();
+            AppStarted();
         }
 
         protected virtual void Update()

@@ -16,8 +16,8 @@ namespace UAppToolKit.Core.Options
         private const string BooleanType = "Boolean";
         private const string CharType = "Char";
         private const string DateTimeType = "DateTime";
-        private const string ValueSufix = "Value";
-        private const string TypeSufix = "Type";
+        private const string ValueSuffix = "Value";
+        private const string TypeSuffix = "Type";
 
 
         protected OptionsProviderBase()
@@ -26,20 +26,30 @@ namespace UAppToolKit.Core.Options
 
         public int LaunchCount
         {
-            get { return (int) GetValueOrDefault(LaunchCountName, 0); }
-            set { Save(LaunchCountName, value); }
+            get
+            {
+                if (!ContainsPref(LaunchCountName))
+                {
+                    FirstLaunch = DateTime.Now;
+                }
+
+                return (int) GetValueOrDefault(LaunchCountName, 0);
+            }
+            set { Save(LaunchCountName, value);            }
         }
 
         public DateTime FirstLaunch
         {
-            get
+            get 
             {
+                var now = DateTime.Now;
                 if (!ContainsPref(FirstLaunchName))
                 {
-                    Save(FirstLaunchName, DateTime.Now);
+                    Save(FirstLaunchName, now);
                 }
-                return (DateTime) GetValueOrDefault(FirstLaunchName,DateTime.Now);
+                return (DateTime)GetValueOrDefault(FirstLaunchName, now);
             }
+            private set { Save(FirstLaunchName, value); }
         }
 
 #region Int
@@ -215,7 +225,7 @@ namespace UAppToolKit.Core.Options
 #if AIOU
             key += AppPrefix;
 #endif
-            key += propertyName + ValueSufix;
+            key += propertyName + ValueSuffix;
             return key;
         }
 
@@ -225,7 +235,7 @@ namespace UAppToolKit.Core.Options
 #if AIOU
             typeKey += AppPrefix;
 #endif
-            typeKey += propertyName + TypeSufix;
+            typeKey += propertyName + TypeSuffix;
             return typeKey;
         }
 

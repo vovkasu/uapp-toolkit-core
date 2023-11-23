@@ -11,16 +11,12 @@ namespace UAppToolKit.Core.Pages
         public readonly List<PopUpBase> PopUps = new List<PopUpBase>();
         [HideInInspector]
         public bool IsActive;
-        public float WaitTimeLoadScreen = 1.0f;
-        public event EventHandler OnPageLoaded;
+        public event Action OnPageLoaded;
         
         public virtual void OnNavigatedTo(object arg)
         {
             IsActive = true;
-            if (WaitTimeLoadScreen < 0)
-            {
-                WaitTimeLoadScreen = 1.0f;
-            }
+            if (OnPageLoaded != null) OnPageLoaded();
         }
 
         public virtual void OnNavigatedToCompleted()

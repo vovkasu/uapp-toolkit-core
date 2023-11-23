@@ -1,12 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UAppToolKit.Core.Loading;
 using UnityEngine;
-
-#if UNITY_EDITOR
-using UnityEditor;
-using UnityEditor.SceneManagement;
-#endif
 
 namespace UAppToolKit.Core.Pages
 {
@@ -14,114 +8,77 @@ namespace UAppToolKit.Core.Pages
     {
         [Header("Page links")]
         public PageBaseLink StartPageLink;
-        public List<PageBaseLink> PageLinkList = new List<PageBaseLink>();
 
         [Header("Page loading screen")]
         public LoadingScreen LoadingScreenPrefab;
-        // [HideInInspector] 
+        [HideInInspector] 
         public LoadingScreen LoadingScreen;
 
         public static int CurrentPageIndex;
         public static readonly List<IPageBaseLink> Pages = new List<IPageBaseLink>();
-        [HideInInspector] public bool BackNavigationByEscape = true;
-
-        [HideInInspector]
-        public PageBase AddPageBase;
+        public bool BackNavigationByEscape = true;
 
         public abstract IEnumerator<float> Initialize();
-        public abstract Navigator ActivePage();
+        public abstract PageBase ActivePage();
+        public abstract void NavigateTo(IPageBaseLink nextPage, object newPageArgs);
         public abstract bool CanGoBack();
+        public abstract void GoBack(object prevPageArgs);
+        public abstract void GoToStartPage();
+        public abstract void RestartLastPage(object restartPageArgs);
+
 
         public virtual void NavigateTo(IPageBaseLink nextPage)
         {
             NavigateTo(nextPage, null);
         }
 
-        public abstract void NavigateTo(IPageBaseLink nextPage, object newPageArgs);
-
-        public virtual void RestartLastPage()
-        {
-            RestartLastPage(null);
-        }
-        public abstract void RestartLastPage(object restartPageArgs);
 
         public virtual void GoBack()
         {
             GoBack(null);
         }
 
-        protected virtual void QuitApplication()
+        public virtual void RestartLastPage()
         {
-            Debug.Log("quit");
-            UnityEngine.Application.Quit();
-        }
-
-        public void InitStartPage(Navigator startPage)
-        {
-            startPage.OnNavigatedTo(null);
+            RestartLastPage(null);
         }
 
         public virtual void RunStartPage()
         {
             var activePage = ActivePage();
+            if (activePage == null) 
+            {
+                Debug.LogError("Active page is null.", this);
+                return;
+            }
+
+            if (activePage.PageBaseLink != StartPageLink)
+            {
+                Debug.LogError("Active page is not start page.", this);
+                return;
+            }
+
             activePage.OnNavigatedToCompleted();
         }
 
-        public abstract void GoToStartPage();
-        public abstract void GoBack(object prevPageArgs);
-
-        protected virtual string GetSceneName(PageBaseLink pageBaseLink)
+        protected virtual void QuitApplication()
         {
-            var baseLink = PageLinkList.First(_ => _.SceneGuid == pageBaseLink.SceneGuid);
-            return baseLink.SceneName;
-        }
-
-
+            Debug.Log("quit");
 #if UNITY_EDITOR
-        protected void OnValidate()
-        {
-            RegisterPageBase(AddPageBase);
-        }
-
-        public void RegisterPageBase(PageBase addPageBase)
-        {
-            if (addPageBase != null)
-            {
-                var scene = addPageBase.gameObject.scene;
-                var assetPathToGuid = AssetDatabase.AssetPathToGUID(scene.path);
-
-                addPageBase.PageBaseLink = new PageBaseLink
-                {
-                    SceneGuid = assetPathToGuid,
-                    SceneTitle = addPageBase.name,
-                    SceneName = scene.name
-                };
-
-                EditorSceneManager.MarkSceneDirty(addPageBase.gameObject.scene);
-                EditorSceneManager.SaveOpenScenes();
-
-                var oldPageBaseLink = PageLinkList.FirstOrDefault(_ => _.SceneGuid == assetPathToGuid);
-
-                if (oldPageBaseLink == null)
-                {
-                    var pageBaseLink = new PageBaseLink();
-                    pageBaseLink.SceneGuid = assetPathToGuid;
-                    pageBaseLink.SceneTitle = addPageBase.name;
-                    pageBaseLink.SceneName = scene.name;
-                    AddPageBase = null;
-                    PageLinkList.Add(pageBaseLink);
-                }
-                else
-                {
-                    oldPageBaseLink.SceneTitle = addPageBase.PageBaseLink.SceneTitle;
-                    oldPageBaseLink.SceneName = addPageBase.PageBaseLink.SceneName;
-                    AddPageBase = null;
-                }
-                EditorUtility.SetDirty(addPageBase);
-                EditorUtility.SetDirty(this);
-            }
-        }
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            UnityEngine.Application.Quit();
 #endif
+        }
 
+        protected void InitStartPage(Navigator startPage)
+        {
+            startPage.OnNavigatedTo(null);
+        }
+
+        protected string GetSceneName(PageBaseLink pageBaseLink)
+        {
+            return pageBaseLink.SceneName;
+        }
     }
 }
