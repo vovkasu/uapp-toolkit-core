@@ -1,5 +1,6 @@
 ﻿using System;
-using UAppToolKit.Core.Application;
+using UAppToolKit.Core.Pages;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace UAppToolKit.Core.Popup
@@ -7,19 +8,14 @@ namespace UAppToolKit.Core.Popup
     public class PopUpBase : PopUpAnimationController
     {
         public Button CloseButton;
-        public event Action ClosedEvent;
+        public event Action OnClosed;
         
-        private Action _onPopupDestroy;
-
-        protected virtual void OnClosedEvent()
-        {
-            Action handler = ClosedEvent;
-            if (handler != null) handler();
-        }
+        private event Action _onPopupDestryed;
+        private Navigator _context;
 
         protected virtual void Awake()
         {
-            if (CloseButton != null) CloseButton.onClick.AddListener(EntryPointBase.Current.NavigationControllerBase.GoBack);
+            if (CloseButton != null) CloseButton.onClick.AddListener(Close);
             Show();
         }
 
@@ -34,22 +30,40 @@ namespace UAppToolKit.Core.Popup
 
         protected virtual void OnDestroy()
         {
-            OnClosedEvent();
+            if (_onPopupDestryed != null) _onPopupDestryed();
         }
 
-        private void OnDisable()
+        public virtual void Close()
         {
-            if (_onPopupDestroy != null)
+            _context.ClosePopUp(this);
+        }
+
+        public void SetContext(Navigator context)
+        {
+            _context = context;
+        }
+
+        public bool CloseAndDestroy(Navigator context)
+        {
+            if (_context != context)
             {
-                _onPopupDestroy();
+                Debug.LogError("Close popup by parent page.");
+                return false;
             }
-            _onPopupDestroy = null;
+
+            DestroyView();
+            return true;
         }
 
-        public virtual void Close(Action onComplete)
+        private void DestroyView()
         {
-            _onPopupDestroy = onComplete;
-            if (onComplete != null) onComplete();
+            Destroy(gameObject);
+        }
+
+        protected virtual void Closed()
+        {
+            Action handler = OnClosed;
+            if (handler != null) handler();
         }
     }
 }

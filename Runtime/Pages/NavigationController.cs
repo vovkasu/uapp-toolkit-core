@@ -107,7 +107,7 @@ namespace UAppToolKit.Core.Pages
 
         public override bool CanGoBack()
         {
-            return CurrentPage.PopUps.Count > 0 || CurrentPageIndex > 0;
+            return CurrentPage.GetPopUpsCount() > 0 || CurrentPageIndex > 0;
         }
 
         public override void GoBack(object prevPageArgs)
@@ -119,15 +119,10 @@ namespace UAppToolKit.Core.Pages
                 return;
             }
 
-            if (CurrentPage.PopUps.Count > 0)
+            if (CurrentPage.GetPopUpsCount() > 0)
             {
-                var popUp = CurrentPage.PopUps.Last();
-                CurrentPage.PopUps.Remove(popUp); //TODO: hide PopUps list
-                popUp.Close(() =>
-                {
-                    popUp.gameObject.SetActive(false);
-                    Object.Destroy(popUp.gameObject); //TODO: close popup by CurrentPage
-                });
+                var popUp = CurrentPage.GetLastPopUp();
+                CurrentPage.ClosePopUp(popUp);
                 return;
             }
 

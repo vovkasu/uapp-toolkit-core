@@ -24,7 +24,7 @@ namespace UAppToolKit.Core.Pages
 
             if (SceneAsset.name != SceneName)
             {
-                Debug.LogWarning($" Scene {SceneName} renamed to {SceneAsset.name}.");
+                Debug.LogWarning($"Scene {SceneName} renamed to {SceneAsset.name}.");
                 SceneName = SceneAsset.name;
                 UnityEditor.EditorUtility.SetDirty(this);
             }
@@ -32,7 +32,7 @@ namespace UAppToolKit.Core.Pages
             var assetPath = UnityEditor.AssetDatabase.GetAssetPath(SceneAsset);
             if (ScenePath != assetPath)
             {
-                Debug.LogWarning($" Scene {SceneName} moved to {assetPath}.");
+                Debug.LogWarning($"Scene {SceneName} moved to {assetPath}.");
                 ScenePath = assetPath;
                 UnityEditor.EditorUtility.SetDirty(this);
             }
