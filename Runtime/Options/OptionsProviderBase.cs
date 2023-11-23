@@ -19,11 +19,6 @@ namespace UAppToolKit.Core.Options
         private const string ValueSuffix = "Value";
         private const string TypeSuffix = "Type";
 
-
-        protected OptionsProviderBase()
-        {
-        }
-
         public int LaunchCount
         {
             get
@@ -207,7 +202,7 @@ namespace UAppToolKit.Core.Options
                 {
                     return LoadDateTime(propertyName);
                 }
-                Debug.LogError("GetValueOrDefault: typeName " + typeName + " is not suported.");
+                Debug.LogError("GetValueOrDefault: typeName " + typeName + " is not supported.");
                 return defaultValue;
             }
             return defaultValue;
@@ -222,9 +217,6 @@ namespace UAppToolKit.Core.Options
         protected string PropKey(string propertyName)
         {
             var key = "";
-#if AIOU
-            key += AppPrefix;
-#endif
             key += propertyName + ValueSuffix;
             return key;
         }
@@ -232,9 +224,6 @@ namespace UAppToolKit.Core.Options
         protected string TypeKey(string propertyName)
         {
             var typeKey = "";
-#if AIOU
-            typeKey += AppPrefix;
-#endif
             typeKey += propertyName + TypeSuffix;
             return typeKey;
         }

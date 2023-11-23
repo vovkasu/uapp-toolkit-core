@@ -12,7 +12,7 @@ namespace UAppToolKit.Core.Timer
         public bool StopOnDisable = true;
         public bool DestroyOnDisable = false;
         public event EventHandler Tick;
-        private float _currectTimerState;
+        private float _currentTimerState;
 
         public void Stop()
         {
@@ -26,7 +26,7 @@ namespace UAppToolKit.Core.Timer
             {
                 Interval = TimeSpan.FromMilliseconds(IntervalMilliseconds);
             }
-            _currectTimerState = (float)Interval.TotalSeconds;
+            _currentTimerState = (float)Interval.TotalSeconds;
         }
 
         protected virtual void OnTick()
@@ -42,10 +42,10 @@ namespace UAppToolKit.Core.Timer
                 return;
             }
 
-            _currectTimerState -= Time.deltaTime;
-            if (_currectTimerState < 0)
+            _currentTimerState -= Time.fixedDeltaTime;
+            if (_currentTimerState < 0)
             {
-                _currectTimerState = (float)Interval.TotalSeconds;
+                _currentTimerState = (float)Interval.TotalSeconds;
                 OnTick();
                 if (!IsLooped)
                 {

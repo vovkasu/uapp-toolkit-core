@@ -72,9 +72,9 @@ namespace UAppToolKit.Core.Loading
             alphaAnimation.Tick += t =>
             {
                 var time = (float)t;
-                var backgroundColor = Background.color;
-                backgroundColor.a = backgroundAlphaCurve.Evaluate(time);
-                Background.color = backgroundColor;
+                var color = Background.color;
+                color.a = backgroundAlphaCurve.Evaluate(time);
+                Background.color = color;
 
                 var alpha = foregroundAlphaCurve.Evaluate(time);
                 foreach (var graphic in Items)

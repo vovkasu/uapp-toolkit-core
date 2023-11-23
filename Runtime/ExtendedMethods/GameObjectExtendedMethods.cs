@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UAppToolKit.Core.ExtendedMethods
 {
-    public static class GameObjectExtendetMethods
+    public static class GameObjectExtendedMethods
     {
         public static void RemoveAllChild(this GameObject gameObject)
         {

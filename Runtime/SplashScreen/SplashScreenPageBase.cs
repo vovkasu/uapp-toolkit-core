@@ -20,7 +20,7 @@ namespace UAppToolKit.Core.SplashScreen
 
         private void Awake()
         {
-            Progress.gameObject.SetActive(false);
+            if (Progress != null) Progress.gameObject.SetActive(false);
         }
 
         protected virtual void OnStartHideEvent()
@@ -78,19 +78,25 @@ namespace UAppToolKit.Core.SplashScreen
 
         public void ShowProgressBar(IEnumerator<float> task)
         {
-            Progress.gameObject.SetActive(true);
-            _progressTask = task;
+            if (Progress != null)
+            {
+                Progress.gameObject.SetActive(true);
+                _progressTask = task;
+            }
         }
 
         public void HideProgressBar()
         {
-            Progress.gameObject.SetActive(false);
-            _progressTask = null;
+            if (Progress != null)
+            {
+                Progress.gameObject.SetActive(false);
+                _progressTask = null;
+            }
         }
 
         private void FixedUpdate()
         {
-            if (_progressTask != null)
+            if (_progressTask != null && Progress != null)
             {
                 Progress.value = _progressTask.Current;
             }

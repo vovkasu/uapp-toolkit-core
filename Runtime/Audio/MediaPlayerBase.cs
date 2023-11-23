@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using Object = UnityEngine.Object;
 
 namespace RescueMatch.Core.Audio
@@ -15,6 +16,8 @@ namespace RescueMatch.Core.Audio
 
         protected readonly List<List<string>> _soundLines = new List<List<string>>();
 
+        public event Action<bool> OnMutedChanged;
+
         private bool _isMuted;
         public virtual bool IsMuted 
         {
@@ -24,11 +27,16 @@ namespace RescueMatch.Core.Audio
             }
             set
             {
-                if (value)
+                if (_isMuted != value)
                 {
-                    StopAllSounds();
+                    if (value)
+                    {
+                        StopAllSounds();
+                    }
+
+                    _isMuted = value;
+                    if (OnMutedChanged != null) OnMutedChanged(value);
                 }
-                _isMuted = value;
             }
         }
 
@@ -53,7 +61,6 @@ namespace RescueMatch.Core.Audio
             var path = GetSoundPath(soundFileName);
             var clip = LoadAudioClip(path);
             var audioSource = CacheAudioClip(clip, alias);
-            TuneAudioSource(audioSource);
 
             return audioSource;
         }
@@ -70,7 +77,6 @@ namespace RescueMatch.Core.Audio
                 return NameSoundMap[audioClip.name];
             }
             var audioSource = CacheAudioClip(audioClip, audioClip.name);
-            TuneAudioSource(audioSource);
 
             return audioSource;
         }
@@ -95,18 +101,6 @@ namespace RescueMatch.Core.Audio
                 NameSoundMap.Add(soundName, audioSource);
             }
             return audioSource;
-        }
-
-        protected virtual void TuneAudioSource(AudioSource audioSource, float volume = 1, bool playOnAwake = false, bool isLooped = false, float panLevel = 0)
-        {
-            audioSource.volume = volume;
-            audioSource.playOnAwake = playOnAwake;
-            audioSource.loop = isLooped;
-#if UNITY_5 || UNITY_5_3_OR_NEWER
-            audioSource.spatialBlend = panLevel;
-#else
-            audioSource.panLevel = panLevel;
-#endif
         }
 
         public virtual void StopSound(string soundFileName)
@@ -146,7 +140,7 @@ namespace RescueMatch.Core.Audio
             PlaySound(soundFileName, isStopAllSounds, false);
         }
 
-        public virtual void PlaySound(string soundFileName, bool isStopAllSounds, bool isLooped)
+        public virtual void PlaySound(string soundFileName, bool isStopAllSounds, bool isLooped, AudioMixerGroup audioMixerGroup = null)
         {
             if (!NameSoundMap.ContainsKey(soundFileName))
             {
@@ -160,6 +154,7 @@ namespace RescueMatch.Core.Audio
                 }
                 var audioSource = NameSoundMap[soundFileName];
                 audioSource.loop = isLooped;
+                audioSource.outputAudioMixerGroup = audioMixerGroup;
                 PlaySound(audioSource);
             }
         }
@@ -202,7 +197,7 @@ namespace RescueMatch.Core.Audio
             foreach (string soundFileName in soundLine)
             {
                 AudioSource audioSource = !NameSoundMap.ContainsKey(soundFileName) ? LoadSound(soundFileName) : NameSoundMap[soundFileName];
-                DeferredSoundPlay(audioSource, TimeSpan.FromSeconds(timeOffset), false);
+                SoundPlayDelayed(audioSource, TimeSpan.FromSeconds(timeOffset), false);
                 timeOffset += audioSource.clip.length + (float)offset.TotalSeconds;
             }
             return soundLine;
@@ -243,12 +238,12 @@ namespace RescueMatch.Core.Audio
             return TimeSpan.FromSeconds(sound.clip.length);
         }
 
-        private void DeferredSoundPlay(string soundFileName, TimeSpan timeSpan)
+        private void SoundPlayDelayed(string soundFileName, TimeSpan delay)
         {
-            DeferredSoundPlay(soundFileName, timeSpan, true);
+            SoundPlayDelayed(soundFileName, delay, true);
         }
 
-        private void DeferredSoundPlay(string soundFileName, TimeSpan timeSpan, bool isStopAllSounds)
+        private void SoundPlayDelayed(string soundFileName, TimeSpan delay, bool isStopAllSounds)
         {
             if (!NameSoundMap.ContainsKey(soundFileName))
             {
@@ -256,11 +251,11 @@ namespace RescueMatch.Core.Audio
             }
             if (NameSoundMap.ContainsKey(soundFileName))
             {
-                DeferredSoundPlay(NameSoundMap[soundFileName], timeSpan, isStopAllSounds);
+                SoundPlayDelayed(NameSoundMap[soundFileName], delay, isStopAllSounds);
             }
         }
 
-        protected virtual void DeferredSoundPlay(AudioSource sound, TimeSpan timeSpan, bool isStopAllSounds)
+        protected virtual void SoundPlayDelayed(AudioSource sound, TimeSpan delay, bool isStopAllSounds)
         {
             if (sound == null)
             {
@@ -272,18 +267,18 @@ namespace RescueMatch.Core.Audio
             }
             if (!IsMuted)
             {
-                sound.PlayDelayed((float) timeSpan.TotalSeconds);
+                sound.PlayDelayed((float) delay.TotalSeconds);
             }
         }
 
-        public void DeferredSoundPlay(string soundFileName, int milliseconds)
+        public void SoundPlayDelayed(string soundFileName, int milliseconds)
         {
-            DeferredSoundPlay(soundFileName, milliseconds, true);
+            SoundPlayDelayed(soundFileName, milliseconds, true);
         }
 
-        public void DeferredSoundPlay(string soundFileName, int milliseconds, bool isStopAllSounds)
+        public void SoundPlayDelayed(string soundFileName, int milliseconds, bool isStopAllSounds)
         {
-            DeferredSoundPlay(soundFileName, TimeSpan.FromMilliseconds(milliseconds), isStopAllSounds);
+            SoundPlayDelayed(soundFileName, TimeSpan.FromMilliseconds(milliseconds), isStopAllSounds);
         }
 
 
