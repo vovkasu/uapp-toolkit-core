@@ -24,7 +24,7 @@ namespace UAppToolKit.Core.Application
 
         public event Action OnAppStarted;
 
-        public virtual void AppStarted()
+        protected virtual void AppStarted()
         {
             NavigationControllerBase.RunStartPage();
             SplashScreen.StartHide();
@@ -50,12 +50,23 @@ namespace UAppToolKit.Core.Application
 
         protected virtual void Start()
         {
-            var initializeApplicationTask = InitializeApplication();
+            var initializingTask = InitializeApplicationInternal();
             if (ShowSplashScreen)
             {
-                SplashScreen.ShowProgressBar(initializeApplicationTask);
+                SplashScreen.ShowProgressBar(initializingTask);
             }
-            StartCoroutine(initializeApplicationTask);
+            StartCoroutine(initializingTask);
+        }
+
+        private IEnumerator<float> InitializeApplicationInternal()
+        {
+            var initializingTask = InitializeApplication();
+            while (initializingTask.MoveNext())
+            {
+                yield return initializingTask.Current;
+            }
+            AppStarted();
+            yield return 1f;
         }
 
         protected virtual IEnumerator<float> InitializeApplication()
@@ -77,7 +88,6 @@ namespace UAppToolKit.Core.Application
             }
 
             yield return 1f;
-            AppStarted();
         }
 
         protected virtual void Update()

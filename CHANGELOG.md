@@ -1,6 +1,13 @@
 Changelog
 =========
 
+[1.0.2] - 2013.11.30
+--------------------
+* **Added** -
+* **Changed**
+    * EntryPointBase initializing logic
+* **Fixed** -
+
 [1.0.1] - 2013.11.30
 --------------------
 * **Added** -
