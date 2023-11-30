@@ -58,7 +58,7 @@ namespace UAppToolKit.Core.Application
             StartCoroutine(initializeApplicationTask);
         }
 
-        private IEnumerator<float> InitializeApplication()
+        protected virtual IEnumerator<float> InitializeApplication()
         {
             float fullProgress = 2f;
             float progress = 0f;

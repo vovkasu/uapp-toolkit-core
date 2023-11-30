@@ -1,6 +1,13 @@
 Changelog
 =========
 
+[1.0.1] - 2013.11.30
+--------------------
+* **Added** -
+* **Changed**
+    * Access permission for EntryPointBase.InitializeApplication
+* **Fixed** -
+
 [1.0.0] - 2023.11.27
 --------------------
 * **Added**
