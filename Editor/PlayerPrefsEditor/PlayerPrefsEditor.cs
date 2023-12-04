@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
 
-namespace Assets.Editor
+namespace UAppToolKit.Core.Editor.PlayerPrefsTool
 {
 
     public class PlayerPrefsEditor : EditorWindow
@@ -75,7 +75,7 @@ namespace Assets.Editor
 
         public bool IsWindows
         {
-            get { return Application.platform == RuntimePlatform.WindowsEditor; }
+            get { return UnityEngine.Application.platform == RuntimePlatform.WindowsEditor; }
         }
 
         [MenuItem("RescueMatch/PlayerPrefs Editor", false, 1)]

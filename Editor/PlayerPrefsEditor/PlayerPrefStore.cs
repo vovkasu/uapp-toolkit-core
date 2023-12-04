@@ -1,4 +1,4 @@
-﻿namespace Assets.Editor
+﻿namespace UAppToolKit.Core.Editor.PlayerPrefsTool
 {
     public class PlayerPrefStore
     {

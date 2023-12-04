@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace UAppToolKit.Core.Pages
 {
-    [Serializable]
-    public class PageBaseLink : ScriptableObject, IPageBaseLink
+    public class PageBaseLink : SceneNameDependentScriptableObject, IPageBaseLink
     {
         public string SceneName;
         public string PageName;
@@ -22,6 +21,11 @@ namespace UAppToolKit.Core.Pages
                 return;
             }
 
+            UpdateSceneName();
+        }
+
+        private void UpdateSceneName()
+        {
             if (SceneAsset.name != SceneName)
             {
                 Debug.LogWarning($"Scene {SceneName} renamed to {SceneAsset.name}.");
@@ -36,6 +40,11 @@ namespace UAppToolKit.Core.Pages
                 ScenePath = assetPath;
                 UnityEditor.EditorUtility.SetDirty(this);
             }
+        }
+
+        public override void AnySceneNameChanged()
+        {
+            UpdateSceneName();
         }
 #endif
     }

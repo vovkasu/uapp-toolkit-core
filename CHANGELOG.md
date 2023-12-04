@@ -1,6 +1,15 @@
 Changelog
 =========
 
+[1.0.3] - 2013.12.04
+--------------------
+* **Added** -
+    * [Editor]**SceneAssetPostprocessor** - detect scene rename and call SceneNameDependentScriptableObject.AnySceneNameChanged
+    * **SceneNameDependentScriptableObject** - Scene Name Dependent ScriptableObject 
+* **Changed**
+    * [Editor] PlayerPrefsEditor and PlayerPrefStore moved to namespace UAppToolKit.Core.Editor.PlayerPrefsTool
+* **Fixed** -
+
 [1.0.2] - 2013.11.30
 --------------------
 * **Added** -
