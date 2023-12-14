@@ -1,6 +1,13 @@
 Changelog
 =========
 
+[1.0.4] - 2013.12.14
+--------------------
+* **Added** -
+* **Changed**
+    * Changed access for OptionsProviderBase.ContainsPref
+* **Fixed** -
+
 [1.0.3] - 2013.12.04
 --------------------
 * **Added** -

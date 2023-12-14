@@ -30,7 +30,7 @@ namespace UAppToolKit.Core.Options
 
                 return (int) GetValueOrDefault(LaunchCountName, 0);
             }
-            set { Save(LaunchCountName, value);            }
+            set { Save(LaunchCountName, value); }
         }
 
         public DateTime FirstLaunch
@@ -208,7 +208,7 @@ namespace UAppToolKit.Core.Options
             return defaultValue;
         }
 
-        private bool ContainsPref(string propertyName)
+        protected bool ContainsPref(string propertyName)
         {
             string type = TypeKey(propertyName);
             return PlayerPrefs.HasKey(PropKey(propertyName)) && PlayerPrefs.HasKey(type);
@@ -216,9 +216,7 @@ namespace UAppToolKit.Core.Options
 
         protected string PropKey(string propertyName)
         {
-            var key = "";
-            key += propertyName + ValueSuffix;
-            return key;
+            return propertyName + ValueSuffix;
         }
 
         protected string TypeKey(string propertyName)
@@ -238,6 +236,6 @@ namespace UAppToolKit.Core.Options
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
 
-#endregion
+        #endregion
     }
 }

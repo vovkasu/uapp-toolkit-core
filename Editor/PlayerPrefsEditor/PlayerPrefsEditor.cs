@@ -6,7 +6,6 @@ using System.Xml;
 using Microsoft.Win32;
 using UnityEngine;
 using UnityEditor;
-using Debug = UnityEngine.Debug;
 
 namespace UAppToolKit.Core.Editor.PlayerPrefsTool
 {
@@ -78,7 +77,7 @@ namespace UAppToolKit.Core.Editor.PlayerPrefsTool
             get { return UnityEngine.Application.platform == RuntimePlatform.WindowsEditor; }
         }
 
-        [MenuItem("RescueMatch/PlayerPrefs Editor", false, 1)]
+        [MenuItem("UAppToolKit/PlayerPrefs Editor", false, 1)]
         private static void Init()
         {
             GetWindow<PlayerPrefsEditor>("PlayerPrefs");
@@ -132,21 +131,20 @@ namespace UAppToolKit.Core.Editor.PlayerPrefsTool
                 GUILayout.Label("Create New PlayerPref", EditorStyles.boldLabel);
                 newPref.name = EditorGUILayout.TextField("New Pref Name : ", newPref.name);
                 GUILayout.BeginHorizontal();
-                switch (newPref.value.type)
+                var newPrefValue = newPref.value;
+                switch (newPrefValue.type)
                 {
                     case PrefType.Int:
-                        newPref.value.intValue = EditorGUILayout.IntField("Initial Value : ", newPref.value.intValue);
+                        newPrefValue.intValue = EditorGUILayout.IntField("Initial Value : ", newPrefValue.intValue);
                         break;
                     case PrefType.Float:
-                        newPref.value.floatValue = EditorGUILayout.FloatField("Initial Value : ",
-                            newPref.value.floatValue);
+                        newPrefValue.floatValue = EditorGUILayout.FloatField("Initial Value : ", newPrefValue.floatValue);
                         break;
                     case PrefType.String:
-                        newPref.value.stringValue = EditorGUILayout.TextField("Initial Value : ",
-                            newPref.value.stringValue);
+                        newPrefValue.stringValue = EditorGUILayout.TextField("Initial Value : ", newPrefValue.stringValue);
                         break;
                 }
-                newPref.value.type = (PrefType) EditorGUILayout.EnumPopup(newPref.value.type, GUILayout.MaxWidth(80));
+                newPrefValue.type = (PrefType) EditorGUILayout.EnumPopup(newPrefValue.type, GUILayout.MaxWidth(80));
                 GUILayout.EndHorizontal();
                 GUILayout.Space(4);
                 GUILayout.BeginHorizontal();
@@ -171,7 +169,7 @@ namespace UAppToolKit.Core.Editor.PlayerPrefsTool
 
 
             GUILayout.Label(
-                "Playerprefs for : " + "unity." + PlayerSettings.companyName + "." + PlayerSettings.productName,
+                "PlayerPrefs for : " + "unity." + PlayerSettings.companyName + "." + PlayerSettings.productName,
                 EditorStyles.boldLabel);
 
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);
