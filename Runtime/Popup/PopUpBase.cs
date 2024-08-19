@@ -51,6 +51,7 @@ namespace UAppToolKit.Core.Popup
                 return false;
             }
 
+            Closed();
             DestroyView();
             return true;
         }
