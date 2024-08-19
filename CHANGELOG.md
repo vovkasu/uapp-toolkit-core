@@ -1,14 +1,21 @@
 Changelog
 =========
 
-[1.0.4] - 2013.12.14
+[1.0.5] - 2024.08.19
+--------------------
+* **Added** -
+* **Changed** -
+* **Fixed**
+    * Fixed popups closing flow
+
+[1.0.4] - 2023.12.14
 --------------------
 * **Added** -
 * **Changed**
     * Changed access for OptionsProviderBase.ContainsPref
 * **Fixed** -
 
-[1.0.3] - 2013.12.04
+[1.0.3] - 2023.12.04
 --------------------
 * **Added** -
     * [Editor]**SceneAssetPostprocessor** - detect scene rename and call SceneNameDependentScriptableObject.AnySceneNameChanged
@@ -17,14 +24,14 @@ Changelog
     * [Editor] PlayerPrefsEditor and PlayerPrefStore moved to namespace UAppToolKit.Core.Editor.PlayerPrefsTool
 * **Fixed** -
 
-[1.0.2] - 2013.11.30
+[1.0.2] - 2023.11.30
 --------------------
 * **Added** -
 * **Changed**
     * EntryPointBase initializing logic
 * **Fixed** -
 
-[1.0.1] - 2013.11.30
+[1.0.1] - 2023.11.30
 --------------------
 * **Added** -
 * **Changed**
