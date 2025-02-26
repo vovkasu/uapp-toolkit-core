@@ -7,17 +7,17 @@ namespace UAppToolKit.Core.Options
 {
     public abstract class OptionsProviderBase : INotifyPropertyChanged
     {
-        private const string FirstLaunchName = "FirstLaunch";
-        private const string LaunchCountName = "LaunchCount";
+        protected const string FirstLaunchName = "FirstLaunch";
+        protected const string LaunchCountName = "LaunchCount";
 
-        private const string IntType = "Int";
-        private const string FloatType = "Float";
-        private const string StringType = "String";
-        private const string BooleanType = "Boolean";
-        private const string CharType = "Char";
-        private const string DateTimeType = "DateTime";
-        private const string ValueSuffix = "Value";
-        private const string TypeSuffix = "Type";
+        protected const string IntType = "Int";
+        protected const string FloatType = "Float";
+        protected const string StringType = "String";
+        protected const string BooleanType = "Boolean";
+        protected const string CharType = "Char";
+        protected const string DateTimeType = "DateTime";
+        protected const string ValueSuffix = "Value";
+        protected const string TypeSuffix = "Type";
 
         public int LaunchCount
         {
@@ -144,7 +144,7 @@ namespace UAppToolKit.Core.Options
 
 #endregion
 
-        protected void Save(string propertyName, object value)
+        protected virtual void Save(string propertyName, object value)
         {
             if (value is Int16 || value is Int32)
             {
@@ -172,7 +172,7 @@ namespace UAppToolKit.Core.Options
             }
         }
 
-        protected object GetValueOrDefault(string propertyName, object defaultValue)
+        protected virtual object GetValueOrDefault(string propertyName, object defaultValue)
         {
             string type = TypeKey(propertyName);
             if (ContainsPref(propertyName) && !String.IsNullOrEmpty(PlayerPrefs.GetString(type)))
@@ -210,8 +210,14 @@ namespace UAppToolKit.Core.Options
 
         protected bool ContainsPref(string propertyName)
         {
-            string type = TypeKey(propertyName);
+            var type = TypeKey(propertyName);
             return PlayerPrefs.HasKey(PropKey(propertyName)) && PlayerPrefs.HasKey(type);
+        }
+
+        protected void DeletePref(string propertyName)
+        {
+            PlayerPrefs.DeleteKey(PropKey(propertyName));
+            PlayerPrefs.DeleteKey(TypeKey(propertyName));
         }
 
         protected string PropKey(string propertyName)

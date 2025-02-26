@@ -1,6 +1,14 @@
 Changelog
 =========
 
+[1.0.6] - 2025.02.26
+--------------------
+* **Added**
+    * OptionsProviderBase added method DeletePref
+* **Changed** -
+    * Changed access for OptionsProviderBase members
+* **Fixed** -
+
 [1.0.5] - 2024.08.19
 --------------------
 * **Added** -
