@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using UAppToolKit.Core.Animations;
+using UAppToolKit.Animations;
 using UnityEngine;
 using UnityEngine.UI;
 

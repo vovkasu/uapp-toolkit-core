@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UAppToolKit.Core.Animations;
-using UAppToolKit.Core.Animations.EasingFunction;
+using UAppToolKit.Animations;
+using UAppToolKit.Animations.EasingFunction;
 using UnityEngine;
 using UnityEngine.UI;
 
