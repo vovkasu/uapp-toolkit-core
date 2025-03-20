@@ -1,6 +1,14 @@
 Changelog
 =========
 
+[1.0.7] - 2025.03.20
+--------------------
+* **Added** -
+* **Changed** -
+    * Class **ListExtendedMethods** moved to external package https://github.com/vovkasu/uapp-toolkit-list-extended-methods
+    * Animations moved to external package https://github.com/vovkasu/uapp-toolkit-animations
+* **Fixed** -
+
 [1.0.6] - 2025.02.26
 --------------------
 * **Added**
