@@ -1,6 +1,14 @@
 Changelog
 =========
 
+[1.0.8] - 2025.04.17
+--------------------
+* **Added** -
+* **Changed** -
+    * PlayerPrefsEditor show tooltip for playerPref name
+    * PlayerPrefsEditor order playerPref by name
+* **Fixed** -
+
 [1.0.7] - 2025.03.20
 --------------------
 * **Added** -
