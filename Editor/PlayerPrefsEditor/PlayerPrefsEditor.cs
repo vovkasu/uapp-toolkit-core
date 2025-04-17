@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using Microsoft.Win32;
 using UnityEngine;
@@ -9,10 +10,8 @@ using UnityEditor;
 
 namespace UAppToolKit.Core.Editor.PlayerPrefsTool
 {
-
     public class PlayerPrefsEditor : EditorWindow
     {
-
         public enum PrefType
         {
             Float,
@@ -155,6 +154,8 @@ namespace UAppToolKit.Core.Editor.PlayerPrefsTool
                     playerPrefs.Add(new PlayerPrefStore(newPref.name, newPref.StringType, newPref.StringValue));
                     SaveAll();
                     isCreatingNew = false;
+
+                    SortPlayerPrefs();
                 }
 
                 if (GUILayout.Button("Cancel"))
@@ -309,6 +310,8 @@ namespace UAppToolKit.Core.Editor.PlayerPrefsTool
                 PlayerPrefStore pref = new PlayerPrefStore(keyName, newType, val);
                 playerPrefs.Add(pref);
             }
+
+            SortPlayerPrefs();
         }
 
         private void GetPrefKeysMac()
@@ -343,7 +346,13 @@ namespace UAppToolKit.Core.Editor.PlayerPrefsTool
 
             //		// Convert plist back to binary
             Process.Start("plutil", " -convert binary1 \"" + pListPath + "\"");
+
+            SortPlayerPrefs();
         }
 
+        private void SortPlayerPrefs()
+        {
+            playerPrefs = playerPrefs.OrderBy(pref => pref.name).ToList();
+        }
     }
 }
