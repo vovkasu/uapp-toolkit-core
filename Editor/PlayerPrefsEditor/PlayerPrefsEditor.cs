@@ -190,24 +190,26 @@ namespace UAppToolKit.Core.Editor.PlayerPrefsTool
                     {
                         GUI.color = Color.green;
                     }
-                    switch (playerPrefs[i].value.type)
+
+                    var prefName = playerPrefs[i].name;
+                    var label = new GUIContent(prefName, $"{prefName} ");
+
+                    var prefValue = playerPrefs[i].value;
+                    var inputWidth = GUILayout.MaxWidth(500);
+                    switch (prefValue.type)
                     {
                         case PrefType.Int:
-                            playerPrefs[i].value.intValue = EditorGUILayout.IntField(playerPrefs[i].name,
-                                playerPrefs[i].value.intValue, EditorStyles.textField, GUILayout.MaxWidth(500));
+                            prefValue.intValue = EditorGUILayout.IntField(label, prefValue.intValue, EditorStyles.textField, inputWidth);
                             break;
                         case PrefType.Float:
-                            playerPrefs[i].value.floatValue = EditorGUILayout.FloatField(playerPrefs[i].name,
-                                playerPrefs[i].value.floatValue, EditorStyles.textField, GUILayout.MaxWidth(500));
+                            prefValue.floatValue = EditorGUILayout.FloatField(label, prefValue.floatValue, EditorStyles.textField, inputWidth);
                             break;
                         case PrefType.String:
-                            playerPrefs[i].value.stringValue = EditorGUILayout.TextField(playerPrefs[i].name,
-                                playerPrefs[i].value.stringValue, EditorStyles.textField, GUILayout.MaxWidth(500));
+                            prefValue.stringValue = EditorGUILayout.TextField(label, prefValue.stringValue, EditorStyles.textField, inputWidth);
                             break;
                     }
                     GUILayout.FlexibleSpace();
-                    playerPrefs[i].value.type =
-                        (PrefType) EditorGUILayout.EnumPopup(playerPrefs[i].value.type, GUILayout.MaxWidth(140));
+                    prefValue.type = (PrefType) EditorGUILayout.EnumPopup(prefValue.type, GUILayout.MaxWidth(140));
                     if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(16), GUILayout.Height(16)))
                     {
                         playerPrefs[i].isMarkedForDelete = !playerPrefs[i].isMarkedForDelete;
