@@ -1,6 +1,13 @@
 Changelog
 =========
 
+[1.0.9] - 2025.08.29
+--------------------
+* **Added** -
+* **Changed** -
+    * Updated dependencies: com.uapp-toolkit.animations 1.0.3
+* **Fixed** -
+
 [1.0.8] - 2025.04.17
 --------------------
 * **Added** -

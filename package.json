@@ -1,12 +1,12 @@
 {
   "name": "com.uapp-toolkit.core",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "displayName": "UAppToolKit.Core",
   "description": "UAppToolKit Core",
   "unity": "2019.1",
   "license": "MIT",
   "dependencies": {
-    "uapp-toolkit-animations": "1.0.1"
+    "com.uapp-toolkit.animations": "1.0.3"
   },
   "keywords": [
     "core",
